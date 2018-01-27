@@ -4,10 +4,10 @@ import json
 
 class TwitterClient:
 
-    config_path = "resources/config.json"
+    config_path = "resources/tweepy_config.json"
 
-    def __init__(self):
-        pass
+    def __init__(self, path=config_path):
+        self.config_path = path
 
     def connect(self):
         config = json.load(open(self.config_path, 'r'))
