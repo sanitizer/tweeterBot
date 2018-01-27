@@ -5,7 +5,7 @@ __pycache__/
 
 *.iml
 .idea/
-tweepy_connector/resources
+tweepy_connector/resources/*
 
 # C extensions
 *.so
