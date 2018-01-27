@@ -5,7 +5,8 @@ __pycache__/
 
 *.iml
 .idea/
-*.json
+tweepy_connector/resources
+
 # C extensions
 *.so
 
