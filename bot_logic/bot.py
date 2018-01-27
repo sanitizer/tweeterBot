@@ -1,5 +1,7 @@
 from tweeterBot.api_connector.tweepy_client import TwitterClient
 from tweeterBot.api_connector.aylien_client import AylienClient
+from tweeterBot.bot_logic.model.api_stats import Stats
+import re
 
 
 class Bot:
@@ -11,8 +13,8 @@ class Bot:
     def get_home_timeline(self):
         return self.twitter_connector.home_timeline()
 
-    def get_friend_tweets(self, userId):
-        return self.twitter_connector.user_timeline(userId)
+    def get_friend_tweets(self, user_id):
+        return self.twitter_connector.user_timeline(user_id)
 
     def get_tweet_calls_stats(self):
         stats = Stats()
@@ -27,24 +29,30 @@ class Bot:
     def get_followers(self):
         return self.twitter_connector.followers()
 
+    # this method should be called after some api call, otherwise will be empty response
     def get_text_processing_limits(self):
         data = self.aylien_connector.RateLimits()
         stats = Stats()
+
         if "limit" in data and "remaining" in data:
             stats.limit = data["limit"]
             stats.remaining = data["remaining"]
+
         return stats
 
+    def get_tweet_categories(self, tweet):
+        tweet = self.sanitize_text_from_url(tweet)
+        tweet = self.sanitize_text_from_refs(tweet)
+        data = self.aylien_connector.Classify({"text": tweet})
+        result = []
+        for category in data["categories"]:
+            result.append(category["label"])
+        return result
 
-class Stats:
+    @staticmethod
+    def sanitize_text_from_url(text):
+        return re.sub(r'(http://|https://)\S+', '', text)
 
-    def __init__(self):
-        self.limit = -1
-        self.remaining = -1
-
-    def __str__(self):
-        return "limit: {} remaining: {}".format(self.limit, self.remaining)
-
-
-bot = Bot()
-print(bot.get_text_processing_limits())
+    @staticmethod
+    def sanitize_text_from_refs(text):
+        return re.sub(r'@\S', '', text)
