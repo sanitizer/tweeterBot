@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from tweeterBot.api_connector.tweepy_client import TwitterClient
 from tweeterBot.api_connector.aylien_client import AylienClient
 from tweeterBot.bot_logic.model.api_stats import Stats
@@ -29,6 +30,11 @@ class Bot:
     def get_followers(self):
         return self.twitter_connector.followers()
 
+    def get_user_tweets(self, user_name, num_of_tweets=10):
+        return self.twitter_connector.user_timeline(screen_name=user_name,
+                                                    count=num_of_tweets,
+                                                    tweet_mode="extended")
+
     # this method should be called after some api call, otherwise will be empty response
     def get_text_processing_limits(self):
         data = self.aylien_connector.RateLimits()
@@ -56,3 +62,11 @@ class Bot:
     @staticmethod
     def sanitize_text_from_refs(text):
         return re.sub(r'@\S', '', text)
+
+
+def main():
+    bot = Bot()
+
+
+if __name__ == "__main__":
+    main()
